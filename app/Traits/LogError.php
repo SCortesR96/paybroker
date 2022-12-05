@@ -21,7 +21,7 @@ trait LogError
     function getErrorMessage(Exception $e, LogChannelEnum $channel, string $location): string
     {
         $errorCode = $channel->value . "-" . now()->timestamp;
-        $errorClientMessage = "Ha ocurrido un error.\r\nContacte con un administrador, su código para una solución es: $errorCode";
+        $errorClientMessage = "There was an error.\r\nContact with support area, this is the ticket for your solution: $errorCode";
         $errorLogMessage = "Error: $errorCode ($location):  \r\n" . $e->getMessage() . PHP_EOL;
 
         Log::channel($channel->value)->error($errorLogMessage);

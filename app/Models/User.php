@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -18,9 +18,11 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'cpf',
         'name',
         'email',
-        'password',
+        'enabled',
+        'deleted',
     ];
 
     /**
@@ -41,4 +43,35 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope(new UserScope);
+    }
+
+    public static function findByCPF($cpf)
+    {
+        return User::where('cpf', $cpf)->first();
+    }
+
+    /**
+     * It returns a boolean value that verify if the user is enabled.
+     *
+     * @return bool A boolean value.
+     */
+    public function isEnabled(): bool
+    {
+        return $this->enabled ? true : false;
+    }
+
+    /**
+     * It returns a boolean value that verify if the user is deleted.
+     *
+     * @return bool A boolean value.
+     */
+    public function isDeleted(): bool
+    {
+        return $this->deleted ? true : false;
+    }
 }

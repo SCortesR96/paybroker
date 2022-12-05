@@ -53,8 +53,11 @@ trait ApiResponse
      * }
      *
      */
-    function Error($message, $data = array(), $code = HttpResponse::HTTP_BAD_REQUEST): JsonResponse
-    {
+    function Error(
+        $message = 'There was an error, please, try it later.',
+        $data = array(),
+        $code = HttpResponse::HTTP_BAD_REQUEST
+    ): JsonResponse {
         return response()->json(
             [
                 'status'    => 'Error',
@@ -108,7 +111,7 @@ trait ApiResponse
      * }
      *
      */
-    function Validation(string $message, array $errors, array $data = array()): JsonResponse
+    function Validation(string $message, $errors, array $data = array()): JsonResponse
     {
         return response()->json(
             [

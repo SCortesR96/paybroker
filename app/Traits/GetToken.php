@@ -1,22 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Traits;
 
 use Exception;
 use GuzzleHttp\Client;
-use App\Traits\GetToken;
-use App\Traits\ApiResponse;
 use App\Enums\LogChannelEnum;
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
-class AuthController extends Controller
+trait GetToken
 {
-    use ApiResponse, GetToken;
-    private $_baseUrl;
-    private $_filePem;
-    private $_fileKey;
-    private $_credentials;
+    use ApiResponse, LogError, BasicResponses;
 
     function __construct()
     {
@@ -26,11 +20,16 @@ class AuthController extends Controller
         $this->_credentials = env('PAYBROKER_CREDENTIALS');
     }
 
-    public function getToken()
+    /**
+     * It's a function that generates a token for the API
+     *
+     * @return array An array with the status and data.
+     */
+    public function generateToken(): array
     {
         try {
             $keys_path = storage_path('app\keys\\');
-            $url = $this->_baseUrl . "v3123/au123th/token";
+            $url = $this->_baseUrl . "v3/auth/token";
 
             $request = Http::retry(3)->withOptions([
                 'cert' => $keys_path . $this->_filePem,
@@ -41,19 +40,23 @@ class AuthController extends Controller
             ])->post($url);
 
             $body = json_decode($request->getBody());
-
             if ($body->token) {
-                return $this->Success('Token generated successfully.', $body);
+                return $this->basicResponse(
+                    true,
+                    ['token' => $body->token]
+                );
             }
-
-            return $this->Error();
+            return $this->basicResponse(
+                false,
+                array()
+            );
         } catch (Exception $e) {
-            return $this->Exception($e, LogChannelEnum::AUTH, 'AuthController.getToken');
+            return $this->basicResponse(
+                false,
+                [
+                    'error' => $this->getErrorMessage($e, LogChannelEnum::AUTH, 'AuthController.getToken')
+                ]
+            );
         }
-    }
-
-    public function showToken()
-    {
-        return $this->generateToken();
     }
 }

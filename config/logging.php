@@ -85,7 +85,7 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
             ],
         ],
 
@@ -122,6 +122,20 @@ return [
         'Auth' => [
             'driver' => 'daily',
             'path' => storage_path('logs/auth/Auth.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 45,
+        ],
+
+        'User' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/user/User.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 45,
+        ],
+
+        'Payment' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/payment/Payment.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 45,
         ],
